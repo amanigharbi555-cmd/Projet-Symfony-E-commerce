@@ -1,9 +1,57 @@
-# E-commerce Symfony 6
+# Projet Symfony E-commerce
 
-Site e-commerce créé avec Symfony 6dans une série de tutoriels présents sur la chaîne Nouvelle-Techno.fr à cette adresse : https://www.youtube.com/playlist?list=PLBq3aRiVuwyzI0MT4LhvwqkVenz5pF_DM
+Site e-commerce créé avec Symfony 6 dans une série de tutoriels présents sur la chaîne Nouvelle-Techno.fr à cette adresse : https://www.youtube.com/playlist?list=PLBq3aRiVuwyzI0MT4LhvwqkVenz5pF_DM
 
 ## Base de données
 Vous trouverez le schéma de base de données ici : https://dbdiagram.io/d/61643981940c4c4eec8f40a5
+
+## Installation
+
+1. Cloner le projet
+```bash
+git clone https://github.com/amanigharbi555-cmd/Projet-Symfony-E-commerce.git
+cd Projet-Symfony-E-commerce
+```
+
+2. Installer les dépendances
+```bash
+composer install
+```
+
+3. Configurer la base de données dans `.env.local`
+```env
+DATABASE_URL="mysql://root:@127.0.0.1:3306/app_runner?serverVersion=8.0&charset=utf8mb4"
+```
+
+4. Créer la base de données et exécuter les migrations
+```bash
+php bin/console doctrine:database:create
+php bin/console doctrine:migrations:migrate
+```
+
+5. (Optionnel) Charger les données de test
+```bash
+php bin/console doctrine:fixtures:load
+```
+
+6. Créer un utilisateur administrateur
+```bash
+php bin/console app:create-admin
+```
+
+7. Lancer le serveur
+```bash
+php -S localhost:8000 -t public
+```
+
+## Fonctionnalités
+
+- Gestion des produits et catégories
+- Panier d'achat
+- Système de commandes
+- Authentification et gestion des utilisateurs
+- Interface d'administration
+- Gestion des images produits
 
 ## Chapitres
 
