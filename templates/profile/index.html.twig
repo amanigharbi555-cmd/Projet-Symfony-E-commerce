@@ -1,0 +1,158 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon profil{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <!-- En-tête de bienvenue -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-danger text-white shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-white text-danger rounded-circle d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                <i class="bi bi-person-circle fs-1"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-4">
+                            <h1 class="h3 mb-2">
+                                <i class="bi bi-hand-thumbs-up"></i> Bonjour {{ user.firstname }} !
+                            </h1>
+                            <p class="mb-0 opacity-75">Bienvenue dans votre espace personnel</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Statistiques -->
+        {% if not is_granted('ROLE_PRODUCT_ADMIN') %}
+            <div class="col-md-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="bi bi-bag-check text-success" style="font-size: 3rem;"></i>
+                        </div>
+                        <h3 class="text-success mb-0">{{ user.orders|length }}</h3>
+                        <p class="text-muted mb-0">Commande(s)</p>
+                        <a href="{{ path('profile_orders') }}" class="btn btn-outline-success btn-sm mt-3">
+                            <i class="bi bi-arrow-right"></i> Voir mes commandes
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        <div class="{{ is_granted('ROLE_PRODUCT_ADMIN') ? 'col-md-6' : 'col-md-4' }}">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="bi bi-shield-check text-info" style="font-size: 3rem;"></i>
+                    </div>
+                    <h3 class="text-info mb-0">
+                        {% if user.isVerified %}
+                            <i class="bi bi-check-circle"></i> Vérifié
+                        {% else %}
+                            <i class="bi bi-x-circle"></i> Non vérifié
+                        {% endif %}
+                    </h3>
+                    <p class="text-muted mb-0">Statut du compte</p>
+                </div>
+            </div>
+        </div>
+        <div class="{{ is_granted('ROLE_PRODUCT_ADMIN') ? 'col-md-6' : 'col-md-4' }}">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="bi bi-calendar-check text-danger" style="font-size: 3rem;"></i>
+                    </div>
+                    <h3 class="text-danger mb-0">{{ user.createdAt|date('d/m/Y') }}</h3>
+                    <p class="text-muted mb-0">Membre depuis</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Informations personnelles -->
+    <div class="row mt-4">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person"></i> Mes informations personnelles
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small">Prénom</label>
+                            <p class="mb-0 fw-bold">{{ user.firstname }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small">Nom</label>
+                            <p class="mb-0 fw-bold">{{ user.lastname }}</p>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-muted small">Email</label>
+                            <p class="mb-0">
+                                <i class="bi bi-envelope"></i> {{ user.email }}
+                            </p>
+                        </div>
+                        {% if user.address %}
+                            <div class="col-12">
+                                <label class="form-label text-muted small">Adresse</label>
+                                <p class="mb-0">
+                                    <i class="bi bi-geo-alt"></i> {{ user.address }}
+                                </p>
+                            </div>
+                        {% endif %}
+                        {% if user.zipcode or user.city %}
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Code postal</label>
+                                <p class="mb-0">{{ user.zipcode ?: '-' }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Ville</label>
+                                <p class="mb-0">{{ user.city ?: '-' }}</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Actions rapides -->
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="bi bi-lightning"></i> Actions rapides
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        {% if not is_granted('ROLE_PRODUCT_ADMIN') %}
+                            <a href="{{ path('profile_orders') }}" class="btn btn-outline-danger">
+                                <i class="bi bi-bag"></i> Mes commandes
+                            </a>
+                            <a href="{{ path('cart_index') }}" class="btn btn-outline-success">
+                                <i class="bi bi-cart"></i> Mon panier
+                            </a>
+                        {% endif %}
+                        {% if is_granted('ROLE_PRODUCT_ADMIN') %}
+                            <a href="{{ path('admin_index') }}" class="btn btn-outline-danger">
+                                <i class="bi bi-speedometer2"></i> Administration
+                            </a>
+                        {% endif %}
+                        <a href="{{ path('main') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Retour à l'accueil
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

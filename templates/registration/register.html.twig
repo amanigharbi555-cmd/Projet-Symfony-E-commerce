@@ -1,0 +1,121 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5">
+                    <!-- En-tête -->
+                    <div class="text-center mb-4">
+                        <div class="bg-danger text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="bi bi-person-plus fs-1"></i>
+                        </div>
+                        <h1 class="h3 fw-bold mb-2">Créer un compte</h1>
+                        <p class="text-muted">Rejoignez-nous et profitez de nos services</p>
+                    </div>
+
+                    {{ form_start(registrationForm, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ registrationForm.firstname.vars.id }}" class="form-label">
+                                    <i class="bi bi-person me-2"></i>Prénom
+                                </label>
+                                {{ form_widget(registrationForm.firstname, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Votre prénom'}}) }}
+                                {{ form_errors(registrationForm.firstname) }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ registrationForm.lastname.vars.id }}" class="form-label">
+                                    <i class="bi bi-person me-2"></i>Nom
+                                </label>
+                                {{ form_widget(registrationForm.lastname, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Votre nom'}}) }}
+                                {{ form_errors(registrationForm.lastname) }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ registrationForm.email.vars.id }}" class="form-label">
+                                <i class="bi bi-envelope me-2"></i>Adresse e-mail
+                            </label>
+                            {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'exemple@email.com'}}) }}
+                            {{ form_errors(registrationForm.email) }}
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="{{ registrationForm.plainPassword.vars.id }}" class="form-label">
+                                <i class="bi bi-lock me-2"></i>Mot de passe
+                            </label>
+                            {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Minimum 6 caractères'}}) }}
+                            {{ form_errors(registrationForm.plainPassword) }}
+                            <div class="form-text">
+                                <i class="bi bi-info-circle"></i> Le mot de passe doit contenir au moins 6 caractères
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 mb-4">
+                            <button type="submit" class="btn btn-danger btn-lg">
+                                <i class="bi bi-check-circle me-2"></i>Créer mon compte
+                            </button>
+                        </div>
+
+                        <div class="text-center">
+                            <p class="mb-0 text-muted">
+                                Vous avez déjà un compte ? 
+                                <a href="{{ path('app_login') }}" class="text-danger fw-bold text-decoration-none">
+                                    <i class="bi bi-box-arrow-in-right"></i> Se connecter
+                                </a>
+                            </p>
+                        </div>
+                    {{ form_end(registrationForm) }}
+                </div>
+            </div>
+
+            <!-- Avantages -->
+            <div class="row mt-4 g-3">
+                <div class="col-md-4 text-center">
+                    <div class="p-3">
+                        <i class="bi bi-shield-check text-danger" style="font-size: 2rem;"></i>
+                        <h6 class="mt-2 mb-0">Sécurisé</h6>
+                        <small class="text-muted">Vos données sont protégées</small>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="p-3">
+                        <i class="bi bi-lightning-charge text-warning" style="font-size: 2rem;"></i>
+                        <h6 class="mt-2 mb-0">Rapide</h6>
+                        <small class="text-muted">Inscription en quelques secondes</small>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="p-3">
+                        <i class="bi bi-gift text-success" style="font-size: 2rem;"></i>
+                        <h6 class="mt-2 mb-0">Gratuit</h6>
+                        <small class="text-muted">Aucun frais d'inscription</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 15px;
+    }
+    .form-control-lg {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+    }
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1.1rem;
+        border-radius: 8px;
+    }
+</style>
+{% endblock %}

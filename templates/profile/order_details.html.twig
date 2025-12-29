@@ -1,0 +1,200 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de la commande {{ order.reference }}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="h3 mb-0">
+                    <i class="bi bi-receipt text-danger"></i> Détails de la commande
+                </h1>
+                <a href="{{ path('profile_orders') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Retour aux commandes
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="bi bi-info-circle"></i> Informations de la commande
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong><i class="bi bi-hash"></i> Référence :</strong><br>
+                            <span class="badge bg-secondary fs-6">{{ order.reference }}</span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong><i class="bi bi-calendar"></i> Date de commande :</strong><br>
+                            {{ order.createdAt|date('d/m/Y à H:i') }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong><i class="bi bi-person"></i> Client :</strong><br>
+                            {{ user.firstname }} {{ user.lastname }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong><i class="bi bi-envelope"></i> Email :</strong><br>
+                            {{ user.email }}
+                        </div>
+                        {% if user.address %}
+                        <div class="col-md-12 mb-3">
+                            <strong><i class="bi bi-geo-alt"></i> Adresse :</strong><br>
+                            {{ user.address }}{% if user.zipcode %}, {{ user.zipcode }}{% endif %}{% if user.city %}, {{ user.city }}{% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="bi bi-cart-check"></i> Produits commandés
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Produit</th>
+                                    <th class="text-center">Quantité</th>
+                                    <th class="text-end">Prix unitaire</th>
+                                    <th class="text-end">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% set totalCommande = 0 %}
+                                {% for detail in order.ordersDetails %}
+                                    {% set totalLigne = detail.price * detail.quantity %}
+                                    {% set totalCommande = totalCommande + totalLigne %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                {% if detail.products.images is not empty and detail.products.images[0] is defined %}
+                                                    <img src="{{ asset('assets/uploads/products/mini/300x300-' ~ detail.products.images[0].name) }}" 
+                                                         alt="{{ detail.products.name }}" 
+                                                         class="me-3" 
+                                                         style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;">
+                                                {% else %}
+                                                    <div class="bg-light d-flex align-items-center justify-content-center me-3" 
+                                                         style="width: 60px; height: 60px; border-radius: 4px;">
+                                                        <i class="bi bi-image text-muted"></i>
+                                                    </div>
+                                                {% endif %}
+                                                <div>
+                                                    <strong>{{ detail.products.name }}</strong>
+                                                    {% if detail.products.categories %}
+                                                        <br><small class="text-muted">{{ detail.products.categories.name }}</small>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-secondary">{{ detail.quantity }}</span>
+                                        </td>
+                                        <td class="text-end">
+                                            {{ (detail.price / 100)|number_format(2, ',', ' ') }} TND
+                                        </td>
+                                        <td class="text-end">
+                                            <strong>{{ (totalLigne / 100)|number_format(2, ',', ' ') }} TND</strong>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <th colspan="3" class="text-end">Sous-total :</th>
+                                    <th class="text-end">{{ (totalCommande / 100)|number_format(2, ',', ' ') }} TND</th>
+                                </tr>
+                                {% if order.coupons %}
+                                    {% set discount = 0 %}
+                                    {% if order.coupons.couponsTypes.name == 'Pourcentage' %}
+                                        {% set discount = totalCommande * (order.coupons.discount / 100) %}
+                                    {% else %}
+                                        {% set discount = order.coupons.discount * 100 %}
+                                    {% endif %}
+                                    <tr>
+                                        <th colspan="3" class="text-end text-success">
+                                            <i class="bi bi-tag"></i> Réduction ({{ order.coupons.code }}) :
+                                        </th>
+                                        <th class="text-end text-success">- {{ (discount / 100)|number_format(2, ',', ' ') }} TND</th>
+                                    </tr>
+                                    {% set totalCommande = totalCommande - discount %}
+                                {% endif %}
+                                <tr class="table-danger">
+                                    <th colspan="3" class="text-end">Total :</th>
+                                    <th class="text-end fs-5">{{ (totalCommande / 100)|number_format(2, ',', ' ') }} TND</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 sticky-top" style="top: 20px;">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-receipt-cutoff"></i> Récapitulatif
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Statut :</strong><br>
+                        <span class="badge bg-success">
+                            <i class="bi bi-check-circle"></i> Confirmée
+                        </span>
+                    </div>
+                    <hr>
+                    <div class="mb-3">
+                        <strong>Nombre d'articles :</strong><br>
+                        {{ order.ordersDetails|length }} produit(s)
+                    </div>
+                    <div class="mb-3">
+                        <strong>Quantité totale :</strong><br>
+                        {% set totalQty = 0 %}
+                        {% for detail in order.ordersDetails %}
+                            {% set totalQty = totalQty + detail.quantity %}
+                        {% endfor %}
+                        {{ totalQty }} article(s)
+                    </div>
+                    <hr>
+                    <div class="mb-3">
+                        {% set totalCommande = 0 %}
+                        {% for detail in order.ordersDetails %}
+                            {% set totalCommande = totalCommande + (detail.price * detail.quantity) %}
+                        {% endfor %}
+                        {% if order.coupons %}
+                            {% set discount = 0 %}
+                            {% if order.coupons.couponsTypes.name == 'Pourcentage' %}
+                                {% set discount = totalCommande * (order.coupons.discount / 100) %}
+                            {% else %}
+                                {% set discount = order.coupons.discount * 100 %}
+                            {% endif %}
+                            {% set totalCommande = totalCommande - discount %}
+                        {% endif %}
+                        <strong class="fs-4">Total :</strong><br>
+                        <span class="text-danger fs-3">{{ (totalCommande / 100)|number_format(2, ',', ' ') }} TND</span>
+                    </div>
+                    {% if order.coupons %}
+                        <div class="alert alert-info mb-0">
+                            <i class="bi bi-tag"></i> <strong>Code promo utilisé :</strong><br>
+                            {{ order.coupons.code }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

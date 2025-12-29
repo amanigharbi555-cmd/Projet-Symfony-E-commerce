@@ -1,0 +1,52 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Ajouter un utilisateur{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            {% include "_partials/_adminnav.html.twig" %}
+            <main class="col-9 border border-light bg-white p-4 shadow-sm rounded">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="h3 mb-0">
+                        <i class="bi bi-person-plus text-primary"></i> Ajouter un utilisateur
+                    </h1>
+                    <a href="{{ path('admin_users_index') }}" class="btn btn-secondary btn-sm">
+                        <i class="bi bi-arrow-left"></i> Retour à la liste
+                    </a>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-8">
+                        {{ form_start(userForm, {'attr': {'class': 'needs-validation', 'novalidate': true}}) }}
+                            <div class="mb-3">
+                                {{ form_row(userForm.lastname) }}
+                            </div>
+                            <div class="mb-3">
+                                {{ form_row(userForm.firstname) }}
+                            </div>
+                            <div class="mb-3">
+                                {{ form_row(userForm.email) }}
+                            </div>
+                            <div class="mb-3">
+                                {{ form_row(userForm.plainPassword) }}
+                            </div>
+                            <div class="mb-3">
+                                {{ form_row(userForm.roles) }}
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle"></i> Créer l'utilisateur
+                                </button>
+                                <a href="{{ path('admin_users_index') }}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Annuler
+                                </a>
+                            </div>
+                        {{ form_end(userForm) }}
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+{% endblock %}
+

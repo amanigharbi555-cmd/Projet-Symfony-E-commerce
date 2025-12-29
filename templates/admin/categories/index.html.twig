@@ -1,0 +1,74 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Liste des catégories{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            {% include "_partials/_adminnav.html.twig" %}
+            <main class="col-9 border border-light bg-white p-4 shadow-sm rounded">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="h3 mb-0">
+                        <i class="bi bi-tags text-danger"></i> Liste des catégories
+                    </h1>
+                    <a href="{{ path('admin_categories_add') }}" class="btn btn-danger">
+                        <i class="bi bi-plus-circle"></i> Ajouter une catégorie
+                    </a>
+                </div>
+                
+                {% if categories is empty %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> Aucune catégorie n'a été créée pour le moment.
+                    </div>
+                {% else %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nom</th>
+                                    <th>Parent</th>
+                                    <th>Slug</th>
+                                    <th>Ordre</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for categorie in categories %}
+                                    <tr>
+                                        <td><span class="badge bg-secondary">#{{ categorie.id }}</span></td>
+                                        <td>
+                                            <strong>{{ categorie.name }}</strong>
+                                            {% if categorie.parent is null %}
+                                                <span class="badge bg-danger ms-2">Principale</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if categorie.parent is not null %}
+                                                <span class="badge bg-info">{{ categorie.parent.name }}</span>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        <td><code class="small">{{ categorie.slug }}</code></td>
+                                        <td>
+                                            <span class="badge bg-secondary">{{ categorie.categoryOrder }}</span>
+                                        </td>
+                                        <td class="text-end">
+                                            <a href="{{ path('admin_categories_edit', {id: categorie.id}) }}" class="btn btn-sm btn-warning" title="Modifier">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a href="{{ path('admin_categories_delete', {id: categorie.id}) }}" class="btn btn-sm btn-danger" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?')">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            </main>
+        </div>
+    </div>
+{% endblock %}

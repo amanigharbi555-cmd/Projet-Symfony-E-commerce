@@ -1,0 +1,21 @@
+doctrine_migrations:
+    migrations_paths:
+        # namespace is arbitrary but should be different from App\Migrations
+        # as migrations classes should NOT be autoloaded
+        'DoctrineMigrations': '%kernel.project_dir%/migrations'
+    # Désactiver le profiler pour éviter la vérification automatique des métadonnées
+    enable_profiler: false
+    # Désactiver la vérification automatique des migrations pour éviter l'erreur MetadataStorageError
+    # Cette vérification cause des erreurs 500 à chaque requête HTTP
+    # Le schéma peut être géré avec doctrine:schema:update au lieu de migrations
+    check_database_platform: false
+    # Configuration du stockage des métadonnées (longueur réduite pour MySQL)
+    storage:
+        table_storage:
+            table_name: doctrine_migration_versions
+            version_column_name: version
+            version_column_length: 191
+            executed_at_column_name: executed_at
+            execution_time_column_name: execution_time
+
+

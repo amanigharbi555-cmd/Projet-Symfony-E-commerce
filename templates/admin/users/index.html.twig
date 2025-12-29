@@ -1,0 +1,98 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Liste des utilisateurs{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            {% include "_partials/_adminnav.html.twig" %}
+            <main class="col-9 border border-light bg-white p-4 shadow-sm rounded">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="h3 mb-0">
+                        <i class="bi bi-people text-info"></i> Liste des utilisateurs
+                    </h1>
+                    <a href="{{ path('admin_users_add') }}" class="btn btn-primary btn-sm">
+                        <i class="bi bi-plus-circle"></i> Ajouter un utilisateur
+                    </a>
+                </div>
+                
+                {% if users is empty %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> Aucun utilisateur n'a été trouvé.
+                    </div>
+                {% else %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Prénom</th>
+                                    <th>Nom</th>
+                                    <th>Email</th>
+                                    <th>Rôles</th>
+                                    <th>Vérifié</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users %}
+                                    <tr>
+                                        <td><span class="badge bg-secondary">#{{ user.id }}</span></td>
+                                        <td><strong>{{ user.firstname }}</strong></td>
+                                        <td><strong>{{ user.lastname }}</strong></td>
+                                        <td>{{ user.email }}</td>
+                                        <td>
+                                            {% for role in user.roles %}
+                                                {% if role == "ROLE_ADMIN" %}
+                                                    {% set name = "Administrateur" %}
+                                                    {% set color = "danger" %}
+                                                {% elseif role == "ROLE_PRODUCT_ADMIN" %}
+                                                    {% set name = "Admin produits" %}
+                                                    {% set color = "warning" %}
+                                                {% else %}
+                                                    {% set name = "Membre" %}
+                                                    {% set color = "success" %}
+                                                {% endif %}
+                                                <span class="badge bg-{{ color }}">{{ name }}</span>
+                                            {% endfor %}
+                                        </td>
+                                        <td>
+                                            {% if user.isVerified %}
+                                                <span class="badge bg-success">
+                                                    <i class="bi bi-check-circle"></i> Oui
+                                                </span>
+                                            {% else %}
+                                                <span class="badge bg-danger">
+                                                    <i class="bi bi-x-circle"></i> Non
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-end">
+                                            <div class="btn-group" role="group">
+                                                <a href="{{ path('admin_users_edit', {id: user.id}) }}" class="btn btn-sm btn-warning" title="Modifier">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                {% if user.id != app.user.id %}
+                                                    <a href="{{ path('admin_users_delete', {id: user.id})}}" 
+                                                       class="btn btn-sm btn-danger" 
+                                                       title="Supprimer"
+                                                       onclick="return confirm('Êtes-vous sûr de vouloir supprimer l\'utilisateur \"{{ user.firstname }} {{ user.lastname }}\" ? Cette action est irréversible.')">
+                                                        <i class="bi bi-trash"></i>
+                                                    </a>
+                                                {% else %}
+                                                    <button class="btn btn-sm btn-secondary" title="Vous ne pouvez pas supprimer votre propre compte" disabled>
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            </main>
+        </div>
+    </div>
+{% endblock %}

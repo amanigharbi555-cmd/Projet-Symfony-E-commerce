@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des produits de la catégorie {{ category.name }}{% endblock %}
+
+{% block body %}
+    <main class="container">
+        <section class="row">
+            <div class="col-12">
+                <h1>Liste des produits de la catégorie {{ category.name }}</h1>
+            </div>
+            {% if products.data is defined and products.data is not empty %}
+                {% for product in products.data %}
+                <div class="col-3 mb-3">
+                    <article class="card h-100">
+                        {% if product.images is not empty and product.images[0] is defined %}
+                            <img src="{{ asset('assets/uploads/products/mini/300x300-' ~ product.images[0].name ) }}" class="card-img-top" alt="{{ product.name }}">
+                        {% else %}
+                            <img src="{{ asset('assets/images/placeholder.png') }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover; background-color: #f0f0f0;">
+                        {% endif %}
+                        <div class="card-body">
+                            <h2 class="card-title">{{ product.name }}</h2>
+                            <p class="card-text">{{ product.description }}</p>
+                            <a href="{{ path('products_details', {"slug": product.slug }) }}" class="btn btn-danger">Voir les détails</a>
+                        </div>
+                    </article>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12">
+                    <p class="alert alert-info">Aucun produit disponible dans cette catégorie pour le moment.</p>
+                </div>
+            {% endif %}
+            {% set path = 'categories_list' %}
+            {% set slug = category.slug %}
+            {% set pages = products.pages %}
+            {% set currentPage = products.page %}
+            {% include "_partials/_pagination.html.twig" %}
+        </section>
+    </main>
+{% endblock %}

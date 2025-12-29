@@ -1,0 +1,177 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil - Boutique en ligne{% endblock %}
+
+{% block body %}
+    <!-- Hero Section -->
+    <section class="bg-danger text-white py-5 mb-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">
+                        <i class="bi bi-shop"></i> Bienvenue dans notre boutique
+                    </h1>
+                    <p class="lead mb-4">
+                        Découvrez notre sélection de produits de qualité à des prix compétitifs. 
+                        Livraison rapide et service client exceptionnel.
+                    </p>
+                    <a href="#categories" class="btn btn-light btn-lg">
+                        <i class="bi bi-arrow-down"></i> Découvrir nos produits
+                    </a>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <i class="bi bi-bag-heart" style="font-size: 15rem; opacity: 0.3;"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main class="container">
+        <!-- Produits en vedette -->
+        {% if featuredProducts is not empty %}
+            <section class="mb-5">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="h3 fw-bold">
+                        <i class="bi bi-star-fill text-warning"></i> Produits en vedette
+                    </h2>
+                </div>
+                <div class="row g-4">
+                    {% for product in featuredProducts|slice(0, 4) %}
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card h-100 shadow-sm border-0 product-card">
+                                <div class="position-relative">
+                                    {% if product.images is not empty and product.images[0] is defined %}
+                                        <img src="{{ asset('assets/uploads/products/mini/300x300-' ~ product.images[0].name ) }}" 
+                                             class="card-img-top" 
+                                             alt="{{ product.name }}"
+                                             style="height: 250px; object-fit: cover;">
+                                    {% else %}
+                                        <div class="bg-light d-flex align-items-center justify-content-center" 
+                                             style="height: 250px;">
+                                            <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                                        </div>
+                                    {% endif %}
+                                    {% if product.stock > 0 %}
+                                        <span class="badge bg-success position-absolute top-0 end-0 m-2">
+                                            <i class="bi bi-check-circle"></i> En stock
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-danger position-absolute top-0 end-0 m-2">
+                                            <i class="bi bi-x-circle"></i> Rupture
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title fw-bold">{{ product.name }}</h5>
+                                    <p class="card-text text-muted small flex-grow-1">
+                                        {{ product.description|length > 100 ? product.description|slice(0, 100) ~ '...' : product.description }}
+                                    </p>
+                                    <div class="d-flex justify-content-between align-items-center mt-auto">
+                                        <span class="h5 text-danger mb-0 fw-bold">
+                                            {{ (product.price / 100)|number_format(2, ',', ' ') }} TND
+                                        </span>
+                                        <a href="{{ path('products_details', {"slug": product.slug }) }}" 
+                                           class="btn btn-danger btn-sm">
+                                            <i class="bi bi-eye"></i> Voir
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+
+        <!-- Catégories -->
+        <section id="categories" class="mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="h3 fw-bold">
+                    <i class="bi bi-grid-3x3-gap text-danger"></i> Nos catégories
+                </h2>
+            </div>
+            
+            {% set currentParent = null %}
+            {% for category in categories %}
+                {% if category.parent == null %}
+                    {% if currentParent is not null %}
+                        </div>
+                    {% endif %}
+                    <div class="mb-5">
+                        <h3 class="h4 mb-4 text-danger">
+                            <i class="bi bi-tag"></i> {{ category.name }}
+                        </h3>
+                        <div class="row g-4">
+                    {% set currentParent = category.id %}
+                {% else %}
+                    {% if category.parent.id == currentParent %}
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card h-100 shadow-sm border-0 category-card">
+                                <div class="card-body text-center p-4">
+                                    <div class="mb-3">
+                                        <i class="bi bi-folder-fill text-danger" style="font-size: 3rem;"></i>
+                                    </div>
+                                    <h4 class="card-title fw-bold">{{ category.name }}</h4>
+                                    <p class="text-muted small mb-3">
+                                        Découvrez tous nos produits dans cette catégorie
+                                    </p>
+                                    <a href="{{ path('categories_list', {slug: category.slug}) }}" 
+                                       class="btn btn-outline-danger w-100">
+                                        <i class="bi bi-arrow-right"></i> Voir les produits
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+            {% if currentParent is not null %}
+                </div>
+            {% endif %}
+        </section>
+
+        <!-- Section Avantages -->
+        <section class="bg-light rounded p-5 mb-5">
+            <div class="row g-4 text-center">
+                <div class="col-md-4">
+                    <div class="p-4">
+                        <i class="bi bi-truck text-danger" style="font-size: 3rem;"></i>
+                        <h5 class="mt-3 fw-bold">Livraison rapide</h5>
+                        <p class="text-muted">Expédition sous 24h pour tous nos produits</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-4">
+                        <i class="bi bi-shield-check text-success" style="font-size: 3rem;"></i>
+                        <h5 class="mt-3 fw-bold">Paiement sécurisé</h5>
+                        <p class="text-muted">Transactions 100% sécurisées et protégées</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-4">
+                        <i class="bi bi-headset text-info" style="font-size: 3rem;"></i>
+                        <h5 class="mt-3 fw-bold">Support client</h5>
+                        <p class="text-muted">Une équipe à votre écoute 7j/7</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <style>
+        .product-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
+        .category-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
+    </style>
+{% endblock %}

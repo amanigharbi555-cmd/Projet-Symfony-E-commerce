@@ -1,0 +1,23 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Ajouter une catégorie{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <div class="row">
+            {% include "_partials/_adminnav.html.twig" %}
+            <main class="col-9 border border-light bg-white p-4 shadow-sm rounded">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="h3 mb-0">
+                        <i class="bi bi-plus-circle text-danger"></i> Ajouter une catégorie
+                    </h1>
+                    <a href="{{ path('admin_categories_index') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Retour
+                    </a>
+                </div>
+                {% include "admin/categories/_form.html.twig" %}
+            </main>
+        </div>
+    </div>
+{% endblock %}
+

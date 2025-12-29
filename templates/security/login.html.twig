@@ -1,0 +1,167 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5">
+                    <!-- En-tête -->
+                    <div class="text-center mb-4">
+                        <div class="bg-danger text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="bi bi-box-arrow-in-right fs-1"></i>
+                        </div>
+                        <h1 class="h3 fw-bold mb-2">Connexion</h1>
+                        <p class="text-muted">Connectez-vous à votre compte</p>
+                    </div>
+
+                    {% if error %}
+                        <div class="alert alert-danger d-flex align-items-center" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                        </div>
+                    {% endif %}
+
+                    {% if app.user %}
+                        <div class="alert alert-info d-flex align-items-center mb-4" role="alert">
+                            <i class="bi bi-info-circle-fill me-2"></i>
+                            <div>
+                                Vous êtes connecté(e) comme <strong>{{ app.user.userIdentifier }}</strong>
+                                <a href="{{ path('app_logout') }}" class="alert-link ms-2">Me déconnecter</a>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <form method="post" class="needs-validation" novalidate>
+                        <div class="mb-3">
+                            <label for="inputEmail" class="form-label">
+                                <i class="bi bi-envelope me-2"></i>Adresse e-mail
+                            </label>
+                            <input 
+                                type="email" 
+                                value="{{ last_username }}" 
+                                name="email" 
+                                id="inputEmail" 
+                                class="form-control form-control-lg" 
+                                autocomplete="email" 
+                                required 
+                                autofocus
+                                placeholder="exemple@email.com"
+                            >
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="inputPassword" class="form-label">
+                                <i class="bi bi-lock me-2"></i>Mot de passe
+                            </label>
+                            <div class="input-group">
+                                <input 
+                                    type="password" 
+                                    name="password" 
+                                    id="inputPassword" 
+                                    class="form-control form-control-lg" 
+                                    autocomplete="current-password" 
+                                    required
+                                    placeholder="Votre mot de passe"
+                                >
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                    <i class="bi bi-eye" id="eyeIcon"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                        <div class="d-grid gap-2 mb-4">
+                            <button class="btn btn-danger btn-lg" type="submit">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Se connecter
+                            </button>
+                        </div>
+
+                        <div class="text-center mb-3">
+                            <a href="{{ path('forgotten_password') }}" class="text-decoration-none">
+                                <i class="bi bi-question-circle me-1"></i>Mot de passe oublié ?
+                            </a>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="text-center">
+                            <p class="mb-0 text-muted">
+                                Vous n'avez pas de compte ? 
+                                <a href="{{ path('app_register') }}" class="text-danger fw-bold text-decoration-none">
+                                    <i class="bi bi-person-plus"></i> S'inscrire
+                                </a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Informations supplémentaires -->
+            <div class="row mt-4 g-3">
+                <div class="col-6 text-center">
+                    <div class="p-3">
+                        <i class="bi bi-shield-check text-success" style="font-size: 1.5rem;"></i>
+                        <h6 class="mt-2 mb-0 small">Connexion sécurisée</h6>
+                    </div>
+                </div>
+                <div class="col-6 text-center">
+                    <div class="p-3">
+                        <i class="bi bi-clock-history text-info" style="font-size: 1.5rem;"></i>
+                        <h6 class="mt-2 mb-0 small">Accès rapide</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 15px;
+    }
+    .form-control-lg {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+    }
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1.1rem;
+        border-radius: 8px;
+    }
+    .input-group .btn {
+        border-left: 0;
+    }
+</style>
+
+<script>
+    // Toggle password visibility
+    document.addEventListener('DOMContentLoaded', function() {
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('inputPassword');
+        const eyeIcon = document.getElementById('eyeIcon');
+        
+        if (togglePassword && passwordInput && eyeIcon) {
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                
+                if (type === 'password') {
+                    eyeIcon.classList.remove('bi-eye-slash');
+                    eyeIcon.classList.add('bi-eye');
+                } else {
+                    eyeIcon.classList.remove('bi-eye');
+                    eyeIcon.classList.add('bi-eye-slash');
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

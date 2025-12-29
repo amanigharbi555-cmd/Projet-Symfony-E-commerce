@@ -1,0 +1,63 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Modifier l'utilisateur{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            {% include "_partials/_adminnav.html.twig" %}
+            <main class="col-9 border border-light bg-white p-4 shadow-sm rounded">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="h3 mb-0">
+                        <i class="bi bi-person-gear text-warning"></i> Modifier l'utilisateur
+                    </h1>
+                    <a href="{{ path('admin_users_index') }}" class="btn btn-secondary btn-sm">
+                        <i class="bi bi-arrow-left"></i> Retour à la liste
+                    </a>
+                </div>
+
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> <strong>Utilisateur :</strong> {{ user.firstname }} {{ user.lastname }} ({{ user.email }})
+                </div>
+
+                <div class="row">
+                    <div class="col-md-8">
+                        {{ form_start(userForm, {'attr': {'class': 'needs-validation', 'novalidate': true}}) }}
+                            <div class="mb-3">
+                                {{ form_row(userForm.lastname) }}
+                            </div>
+                            <div class="mb-3">
+                                {{ form_row(userForm.firstname) }}
+                            </div>
+                            <div class="mb-3">
+                                {{ form_row(userForm.email) }}
+                            </div>
+                            <div class="mb-3">
+                                {{ form_row(userForm.roles) }}
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    {{ form_widget(userForm.isVerified) }}
+                                    {{ form_label(userForm.isVerified) }}
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                {{ form_row(userForm.plainPassword) }}
+                                <small class="form-text text-muted">Laissez vide pour conserver le mot de passe actuel</small>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-warning">
+                                    <i class="bi bi-check-circle"></i> Enregistrer les modifications
+                                </button>
+                                <a href="{{ path('admin_users_index') }}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Annuler
+                                </a>
+                            </div>
+                        {{ form_end(userForm) }}
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+{% endblock %}
+

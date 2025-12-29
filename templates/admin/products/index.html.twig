@@ -1,0 +1,88 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Liste des produits{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            {% include "_partials/_adminnav.html.twig" %}
+            <main class="col-9 border border-light bg-white p-4 shadow-sm rounded">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="h3 mb-0">
+                        <i class="bi bi-box-seam text-success"></i> Liste des produits
+                    </h1>
+                    <a href="{{ path('admin_products_add') }}" class="btn btn-success">
+                        <i class="bi bi-plus-circle"></i> Ajouter un produit
+                    </a>
+                </div>
+                
+                {% if produits is empty %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> Aucun produit n'a été créé pour le moment.
+                    </div>
+                {% else %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Photo</th>
+                                    <th>Nom</th>
+                                    <th>Prix</th>
+                                    <th>Stock</th>
+                                    <th>Catégorie</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for produit in produits %}
+                                    <tr>
+                                        <td><span class="badge bg-secondary">#{{ produit.id }}</span></td>
+                                        <td>
+                                            {% if produit.images is not empty and produit.images[0] is defined %}
+                                                <img src="{{ asset('assets/uploads/products/mini/300x300-' ~ produit.images[0].name ) }}" alt="{{ produit.name }}" class="img-thumbnail" style="max-width: 60px; max-height: 60px; object-fit: cover;">
+                                            {% else %}
+                                                <div class="bg-light d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                                    <i class="bi bi-image text-muted"></i>
+                                                </div>
+                                            {% endif %}
+                                        </td>
+                                        <td><strong>{{ produit.name }}</strong></td>
+                                        <td>
+                                            <span class="badge bg-success">{{ (produit.price / 100)|number_format(2, ',', ' ') }} TND</span>
+                                        </td>
+                                        <td>
+                                            {% if produit.stock > 10 %}
+                                                <span class="badge bg-success">{{ produit.stock }}</span>
+                                            {% elseif produit.stock > 0 %}
+                                                <span class="badge bg-warning">{{ produit.stock }}</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">{{ produit.stock }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">{{ produit.categories.name }}</span>
+                                        </td>
+                                        <td class="text-end">
+                                            <div class="btn-group" role="group">
+                                                <a href="{{ path('admin_products_edit', {id: produit.id})}}" class="btn btn-sm btn-warning" title="Modifier">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <a href="{{ path('admin_products_delete', {id: produit.id})}}" 
+                                                   class="btn btn-sm btn-danger" 
+                                                   title="Supprimer"
+                                                   onclick="return confirm('Êtes-vous sûr de vouloir supprimer le produit \"{{ produit.name }}\" ? Cette action est irréversible.')">
+                                                    <i class="bi bi-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            </main>
+        </div>
+    </div>
+{% endblock %}
