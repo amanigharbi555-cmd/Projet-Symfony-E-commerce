@@ -151,6 +151,11 @@ class ProductsController extends AbstractController
         // On vérifie si l'utilisateur peut supprimer avec le Voter
         $this->denyAccessUnlessGranted('PRODUCT_DELETE', $product);
 
+        // Supprimer tous les détails de commande associés au produit
+        foreach($product->getOrdersDetails() as $orderDetail){
+            $em->remove($orderDetail);
+        }
+
         // Supprimer toutes les images associées au produit
         foreach($product->getImages() as $image){
             $nom = $image->getName();

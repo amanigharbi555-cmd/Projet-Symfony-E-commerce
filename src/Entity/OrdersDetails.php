@@ -21,7 +21,7 @@ class OrdersDetails
 
     #[ORM\Id]
     #[ORM\ManyToOne(targetEntity: Products::class, inversedBy: 'ordersDetails')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private $products;
 
     public function getQuantity(): ?int
