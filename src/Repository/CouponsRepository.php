@@ -19,32 +19,92 @@ class CouponsRepository extends ServiceEntityRepository
         parent::__construct($registry, Coupons::class);
     }
 
-    // /**
-    //  * @return Coupons[] Returns an array of Coupons objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * Trouve tous les coupons actifs et valides
+     * 
+     * @return Coupons[] Returns an array of Coupons objects
+     */
+    public function findActiveCoupons(): array
     {
+        $now = new \DateTime();
+        
         return $this->createQueryBuilder('c')
-            ->andWhere('c.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('c.id', 'ASC')
-            ->setMaxResults(10)
+            ->andWhere('c.is_valid = :valid')
+            ->andWhere('c.validity > :now')
+            ->setParameter('valid', true)
+            ->setParameter('now', $now)
+            ->orderBy('c.created_at', 'DESC')
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
     }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?Coupons
+    /**
+     * Trouve un coupon par son code (insensible à la casse)
+     * 
+     * @param string $code Le code du coupon
+     * @return Coupons|null
+     */
+    public function findByCode(string $code): ?Coupons
     {
         return $this->createQueryBuilder('c')
-            ->andWhere('c.exampleField = :val')
-            ->setParameter('val', $value)
+            ->andWhere('UPPER(c.code) = :code')
+            ->setParameter('code', strtoupper($code))
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->getOneOrNullResult();
     }
-    */
+
+    /**
+     * Trouve les coupons qui expirent bientôt (dans les X jours)
+     * 
+     * @param int $days Nombre de jours
+     * @return Coupons[] Returns an array of Coupons objects
+     */
+    public function findExpiringSoon(int $days = 7): array
+    {
+        $now = new \DateTime();
+        $futureDate = new \DateTime("+{$days} days");
+        
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.is_valid = :valid')
+            ->andWhere('c.validity BETWEEN :now AND :future')
+            ->setParameter('valid', true)
+            ->setParameter('now', $now)
+            ->setParameter('future', $futureDate)
+            ->orderBy('c.validity', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Trouve les coupons par type
+     * 
+     * @param int $typeId L'ID du type de coupon
+     * @return Coupons[] Returns an array of Coupons objects
+     */
+    public function findByType(int $typeId): array
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.coupons_types = :type')
+            ->setParameter('type', $typeId)
+            ->orderBy('c.created_at', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Trouve les coupons les plus utilisés
+     * 
+     * @param int $limit Nombre de résultats
+     * @return Coupons[] Returns an array of Coupons objects
+     */
+    public function findMostUsed(int $limit = 10): array
+    {
+        return $this->createQueryBuilder('c')
+            ->leftJoin('c.orders', 'o')
+            ->groupBy('c.id')
+            ->orderBy('COUNT(o.id)', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
 }

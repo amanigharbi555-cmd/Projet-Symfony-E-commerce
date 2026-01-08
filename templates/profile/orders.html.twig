@@ -44,6 +44,7 @@
                                         <th>Référence</th>
                                         <th>Date</th>
                                         <th>Statut</th>
+                                        <th>Coupon</th>
                                         <th>Total</th>
                                         <th class="text-end">Actions</th>
                                     </tr>
@@ -64,10 +65,28 @@
                                                 </span>
                                             </td>
                                             <td>
+                                                {% if order.coupons %}
+                                                    <span class="badge bg-warning text-dark">
+                                                        <i class="bi bi-ticket-perforated"></i> {{ order.coupons.code }}
+                                                    </span>
+                                                {% else %}
+                                                    <span class="text-muted">-</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
                                                 {% set total = 0 %}
                                                 {% for detail in order.ordersDetails %}
                                                     {% set total = total + (detail.price * detail.quantity) %}
                                                 {% endfor %}
+                                                {% if order.coupons %}
+                                                    {% set discount = 0 %}
+                                                    {% if order.coupons.couponsTypes.name == 'Pourcentage' %}
+                                                        {% set discount = total * (order.coupons.discount / 100) %}
+                                                    {% else %}
+                                                        {% set discount = order.coupons.discount * 100 %}
+                                                    {% endif %}
+                                                    {% set total = total - discount %}
+                                                {% endif %}
                                                 <strong>{{ (total / 100)|number_format(2, ',', ' ') }} TND</strong>
                                             </td>
                                             <td class="text-end">

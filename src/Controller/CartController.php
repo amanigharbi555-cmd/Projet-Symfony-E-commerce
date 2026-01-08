@@ -3,7 +3,9 @@ namespace App\Controller;
 
 use App\Entity\Products;
 use App\Repository\ProductsRepository;
+use App\Service\CouponService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -11,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class CartController extends AbstractController
 {
     #[Route('/', name: 'index')]
-    public function index(SessionInterface $session, ProductsRepository $productsRepository)
+    public function index(SessionInterface $session, ProductsRepository $productsRepository, CouponService $couponService)
     {
         $panier = $session->get('panier', []);
 
@@ -28,8 +30,33 @@ class CartController extends AbstractController
             ];
             $total += $product->getPrice() * $quantity;
         }
+
+        // Gestion des coupons
+        $coupon = null;
+        $discount = 0;
+        $finalTotal = $total;
+
+        $couponCode = $session->get('coupon_code');
+        if ($couponCode) {
+            $couponData = $couponService->validateCoupon($couponCode);
+            if ($couponData['valid']) {
+                $coupon = $couponData['coupon'];
+                $result = $couponService->applyCoupon($coupon, $total / 100);
+                $discount = $result['discount'] * 100; // Convertir en centimes
+                $finalTotal = $result['new_total'] * 100;
+            } else {
+                // Si le coupon n'est plus valide, on le retire de la session
+                $session->remove('coupon_code');
+            }
+        }
         
-        return $this->render('cart/index.html.twig', compact('data', 'total'));
+        return $this->render('cart/index.html.twig', [
+            'data' => $data,
+            'total' => $total,
+            'coupon' => $coupon,
+            'discount' => $discount,
+            'finalTotal' => $finalTotal
+        ]);
     }
 
 
@@ -104,6 +131,38 @@ class CartController extends AbstractController
     public function empty(SessionInterface $session)
     {
         $session->remove('panier');
+        $session->remove('coupon_code');
+
+        return $this->redirectToRoute('cart_index');
+    }
+
+    #[Route('/apply-coupon', name: 'apply_coupon', methods: ['POST'])]
+    public function applyCoupon(Request $request, SessionInterface $session, CouponService $couponService)
+    {
+        $couponCode = $request->request->get('coupon_code');
+
+        if (!$couponCode) {
+            $this->addFlash('danger', 'Veuillez saisir un code promo');
+            return $this->redirectToRoute('cart_index');
+        }
+
+        $result = $couponService->validateCoupon($couponCode);
+
+        if ($result['valid']) {
+            $session->set('coupon_code', strtoupper($couponCode));
+            $this->addFlash('success', $result['message']);
+        } else {
+            $this->addFlash('danger', $result['message']);
+        }
+
+        return $this->redirectToRoute('cart_index');
+    }
+
+    #[Route('/remove-coupon', name: 'remove_coupon')]
+    public function removeCoupon(SessionInterface $session)
+    {
+        $session->remove('coupon_code');
+        $this->addFlash('info', 'Le code promo a été retiré');
 
         return $this->redirectToRoute('cart_index');
     }

@@ -5,6 +5,9 @@
         <section class="row">
             <div class="col-12">
                 <h1>Panier</h1>
+                
+                {% include '_partials/_flash.html.twig' %}
+                
                 <table class="table">
                     <thead>
                         <tr>
@@ -36,15 +39,63 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="3">Total</td>
-                            <td>{{ total / 100 }} TND</td>
-                            <td>
-                                <a href="{{ path('cart_empty') }}" class="btn btn-danger">Vider</a>
-                            </td>
+                            <td colspan="3"><strong>Sous-total</strong></td>
+                            <td colspan="2">{{ total / 100 }} TND</td>
+                        </tr>
+                        {% if coupon %}
+                            <tr class="table-success">
+                                <td colspan="3">
+                                    <strong>Code promo appliqué : {{ coupon.code }}</strong>
+                                    <br>
+                                    <small>{{ coupon.description }}</small>
+                                </td>
+                                <td colspan="2">
+                                    -{{ discount / 100 }} TND
+                                    <a href="{{ path('cart_remove_coupon') }}" class="btn btn-sm btn-outline-danger ms-2">
+                                        <i class="bi bi-x"></i> Retirer
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endif %}
+                        <tr class="table-dark">
+                            <td colspan="3"><strong>Total à payer</strong></td>
+                            <td colspan="2"><strong>{{ finalTotal / 100 }} TND</strong></td>
                         </tr>
                     </tfoot>
                 </table>
-                <a href="{{ path('app_orders_add') }}" class="btn btn-danger">Valider le panier</a>
+
+                {% if data is not empty %}
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            {% if not coupon %}
+                                <div class="card">
+                                    <div class="card-header bg-primary text-white">
+                                        <i class="bi bi-ticket-perforated"></i> Code promo
+                                    </div>
+                                    <div class="card-body">
+                                        <form method="post" action="{{ path('cart_apply_coupon') }}">
+                                            <div class="input-group">
+                                                <input type="text" name="coupon_code" class="form-control" 
+                                                       placeholder="Entrez votre code promo" 
+                                                       style="text-transform: uppercase;"
+                                                       required>
+                                                <button type="submit" class="btn btn-primary">Appliquer</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <a href="{{ path('cart_empty') }}" class="btn btn-warning me-2">
+                                <i class="bi bi-trash"></i> Vider le panier
+                            </a>
+                            <a href="{{ path('app_orders_add') }}" class="btn btn-success btn-lg">
+                                <i class="bi bi-check-circle"></i> Valider le panier
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
             </div>
         </section>
     </main>

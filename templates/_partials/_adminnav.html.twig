@@ -46,6 +46,23 @@
         </div>
     </article>
     
+    <article class="card mb-3 shadow-sm">
+        <div class="card-header bg-warning text-dark">
+            <i class="bi bi-ticket-perforated"></i> Coupons
+        </div>
+        <div class="card-body p-2">
+            <a href="{{ path('admin_coupons_index') }}" class="btn btn-sm btn-outline-warning w-100 mb-2 text-start">
+                <i class="bi bi-list-ul"></i> Liste des coupons
+            </a>
+            <a href="{{ path('admin_coupons_add') }}" class="btn btn-sm btn-outline-warning w-100 mb-2 text-start">
+                <i class="bi bi-plus-circle"></i> Ajouter un coupon
+            </a>
+            <a href="{{ path('admin_coupons_types_index') }}" class="btn btn-sm btn-outline-warning w-100 text-start">
+                <i class="bi bi-tags"></i> Types de coupons
+            </a>
+        </div>
+    </article>
+    
     <div class="mt-4">
         <a href="{{ path('main') }}" class="btn btn-outline-secondary w-100">
             <i class="bi bi-arrow-left"></i> Retour au site

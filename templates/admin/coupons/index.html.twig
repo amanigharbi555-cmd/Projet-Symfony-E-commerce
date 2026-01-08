@@ -1,0 +1,120 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des coupons{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Gestion des coupons</h1>
+        <div>
+            <a href="{{ path('admin_coupons_types_index') }}" class="btn btn-secondary">
+                <i class="bi bi-tags"></i> Types de coupons
+            </a>
+            <a href="{{ path('admin_coupons_add') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Nouveau coupon
+            </a>
+        </div>
+    </div>
+
+    {% include '_partials/_flash.html.twig' %}
+
+    {% if coupons is empty %}
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> Aucun coupon n'a été créé pour le moment.
+        </div>
+    {% else %}
+        <div class="table-responsive">
+            <table class="table table-hover table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Code</th>
+                        <th>Description</th>
+                        <th>Type</th>
+                        <th>Réduction</th>
+                        <th>Utilisations</th>
+                        <th>Validité</th>
+                        <th>Statut</th>
+                        <th>Date de création</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for coupon in coupons %}
+                    <tr>
+                        <td><strong>{{ coupon.code }}</strong></td>
+                        <td>{{ coupon.description|length > 50 ? coupon.description|slice(0, 50) ~ '...' : coupon.description }}</td>
+                        <td>
+                            <span class="badge bg-info">{{ coupon.couponsTypes.name }}</span>
+                        </td>
+                        <td>
+                            {% if coupon.couponsTypes.name == 'Pourcentage' %}
+                                {{ coupon.discount }}%
+                            {% else %}
+                                {{ coupon.discount }} TND
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary">
+                                {{ coupon.orders|length }} / {{ coupon.maxUsage }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if coupon.validity < date() %}
+                                <span class="text-danger">
+                                    <i class="bi bi-calendar-x"></i> Expiré
+                                </span>
+                            {% else %}
+                                {{ coupon.validity|date('d/m/Y H:i') }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if coupon.isValid %}
+                                <span class="badge bg-success">Actif</span>
+                            {% else %}
+                                <span class="badge bg-danger">Inactif</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ coupon.createdAt|date('d/m/Y') }}</td>
+                        <td class="text-center">
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ path('admin_coupons_edit', {id: coupon.id}) }}" 
+                                   class="btn btn-warning" title="Modifier">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button type="button" class="btn btn-danger" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#deleteModal{{ coupon.id }}"
+                                        title="Supprimer">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Modal de confirmation de suppression -->
+                    <div class="modal fade" id="deleteModal{{ coupon.id }}" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Confirmer la suppression</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Êtes-vous sûr de vouloir supprimer le coupon <strong>{{ coupon.code }}</strong> ?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                    <form method="post" action="{{ path('admin_coupons_delete', {id: coupon.id}) }}">
+                                        <button type="submit" class="btn btn-danger">Supprimer</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un coupon{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">
+                        <i class="bi bi-ticket-perforated"></i> Créer un nouveau coupon
+                    </h2>
+                </div>
+                <div class="card-body">
+                    {% include '_partials/_flash.html.twig' %}
+                    
+                    {{ form_start(form) }}
+                        <div class="mb-3">
+                            {{ form_row(form.code) }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_row(form.description) }}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form_row(form.coupons_types) }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form_row(form.discount) }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form_row(form.max_usage) }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form_row(form.validity) }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            {{ form_widget(form.is_valid) }}
+                            {{ form_label(form.is_valid) }}
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{{ path('admin_coupons_index') }}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Retour
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Créer le coupon
+                            </button>
+                        </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

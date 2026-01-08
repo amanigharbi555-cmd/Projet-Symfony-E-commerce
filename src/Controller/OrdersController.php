@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Orders;
 use App\Entity\OrdersDetails;
 use App\Repository\ProductsRepository;
+use App\Service\CouponService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,7 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class OrdersController extends AbstractController
 {
     #[Route('/ajout', name: 'add')]
-    public function add(SessionInterface $session, ProductsRepository $productsRepository, EntityManagerInterface $em): Response
+    public function add(SessionInterface $session, ProductsRepository $productsRepository, EntityManagerInterface $em, CouponService $couponService): Response
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
 
@@ -32,6 +33,15 @@ class OrdersController extends AbstractController
         // On remplit la commande
         $order->setUsers($this->getUser());
         $order->setReference(uniqid());
+
+        // Gestion du coupon si présent
+        $couponCode = $session->get('coupon_code');
+        if ($couponCode) {
+            $couponData = $couponService->validateCoupon($couponCode);
+            if ($couponData['valid']) {
+                $order->setCoupons($couponData['coupon']);
+            }
+        }
 
         // On parcourt le panier pour créer les détails de commande
         foreach($panier as $item => $quantity){
@@ -55,6 +65,7 @@ class OrdersController extends AbstractController
         $em->flush();
 
         $session->remove('panier');
+        $session->remove('coupon_code');
 
         $this->addFlash('message', 'Commande créée avec succès');
         return $this->redirectToRoute('main');
